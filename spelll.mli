@@ -88,6 +88,7 @@ let words = List.map (fun s->s,s) words;;
 let idx = Spelll.Index.of_list words;;
 
 Spelll.Index.retrieve ~limit:1 idx "hell" |> Spelll.klist_to_list;;
+]
 *)
 
 module type S = sig

@@ -7,3 +7,13 @@
 *.cmx
 *.cmxs
 *.cmxa
+.*.swp
+.*.swo
+_build
+_build
+*.native
+.session
+TAGS
+*.docdir
+setup.log
+setup.data

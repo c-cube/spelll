@@ -1,0 +1,42 @@
+OASISFormat: 0.4
+Name:        spelll
+Version:     0.1
+Homepage:    https://github.com/c-cube/spelll
+Authors:     Simon Cruanes
+License:     BSD-2-clause
+LicenseFile: LICENSE
+Plugins:     META (0.3), DevFiles (0.3)
+OCamlVersion: >= 4.00.1
+BuildTools:  ocamlbuild
+
+Synopsis:    Fuzzy string searching, using Levenshtein automaton. Can be used for spell-checking.
+
+Library "spelll"
+  Path:             .
+  Modules:          Spelll
+
+Executable run_qcheck
+  Path:             tests/
+  Install:          false
+  CompiledObject:   native
+  Build$:           flag(tests)
+  MainIs:           run_qcheck.ml
+  BuildDepends:     spelll,qcheck
+
+Test all
+  Command:      $run_qcheck
+  TestTools:    run_qcheck
+  Run$:         flag(tests)
+
+Document spelll
+  Title:                Documentation for Spelll
+  Type:                 ocamlbuild (0.3)
+  BuildTools+:          ocamldoc
+  Install:              true
+  XOCamlbuildPath:      .
+  XOCamlbuildLibraries: spelll
+
+SourceRepository head
+  Type: git
+  Location: https://github.com/c-cube/spelll
+  Browser: https://github.com/c-cube/spelll/tree/master/src
