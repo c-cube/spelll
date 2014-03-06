@@ -28,7 +28,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 (** {1 Levenshtein distance and index}
 
 We take inspiration from
-http://blog.notdot.net/2010/07/Damn-Cool-Algorithms-Levenshtein-Automata
+{{:http://blog.notdot.net/2010/07/Damn-Cool-Algorithms-Levenshtein-Automata}
+this blog}
 for the main algorithm and ideas. However some parts are adapted *)
 
 (** {2 Abstraction over Strings}
@@ -78,7 +79,7 @@ The signature for a given string representation provides 3 main things:
   maximal distance).
 
 A possible use of the index could be:
-[
+{[
 open Batteries;;
 
 let words = File.with_file_in "/usr/share/dict/english" 
@@ -88,7 +89,14 @@ let words = List.map (fun s->s,s) words;;
 let idx = Spelll.Index.of_list words;;
 
 Spelll.Index.retrieve ~limit:1 idx "hell" |> Spelll.klist_to_list;;
-]
+]}
+
+Here we use {{:https://github.com/ocaml-batteries-team/batteries-included}Batteries}
+to read a dictionary file into a list of words; then we create an index that
+maps every string to itself (a set of strings, really), and finally
+we find every string at distance at most 1 from "hell" (including "hello"
+for instance).
+
 *)
 
 module type S = sig
