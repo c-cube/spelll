@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: e91e997c788a2738b5801541b25ff8cc)
+# DO NOT EDIT (digest: aa9839f7cc05ce03320e2d2d5fe45d0b)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -16,8 +16,8 @@
 # Library spelll
 "spelll.cmxs": use_spelll
 # Executable run_qcheck
-"tests/run_qcheck.native": package(qcheck)
+"tests/run_qcheck.native": pkg_qcheck
 "tests/run_qcheck.native": use_spelll
-<tests/*.ml{,i}>: package(qcheck)
+<tests/*.ml{,i}>: pkg_qcheck
 <tests/*.ml{,i}>: use_spelll
 # OASIS_STOP
