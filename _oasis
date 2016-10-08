@@ -11,7 +11,7 @@ BuildTools:  ocamlbuild
 Synopsis:    Fuzzy string searching, using Levenshtein automaton. Can be used for spell-checking.
 
 Library "spelll"
-  Path:             .
+  Path:             src
   Modules:          Spelll
 
 Executable run_qcheck
@@ -20,7 +20,7 @@ Executable run_qcheck
   CompiledObject:   native
   Build$:           flag(tests)
   MainIs:           run_qcheck.ml
-  BuildDepends:     spelll,qcheck
+  BuildDepends:     spelll, qcheck
 
 Test all
   Command:      $run_qcheck
