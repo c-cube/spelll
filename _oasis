@@ -10,9 +10,10 @@ BuildTools:  ocamlbuild
 
 Synopsis:    Fuzzy string searching, using Levenshtein automaton. Can be used for spell-checking.
 
-Library "spelll"
+Library spelll
   Path:             src
   Modules:          Spelll
+  BuildDepends:     bytes
 
 Executable run_qcheck
   Path:             tests/
