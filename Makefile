@@ -46,4 +46,7 @@ push_doc: doc
 tags:
 	otags *.ml *.mli
 
+test_long: build
+	./run_qcheck.native --long -v
+
 .PHONY: push_doc tags

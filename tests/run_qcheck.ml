@@ -10,7 +10,7 @@ let test_automaton =
     Spelll.match_with a s
   in
   let name = "string accepted by its own automaton" in
-  QCheck.Test.make ~name gen test
+  QCheck.Test.make ~name ~long_factor:5 ~count:100 gen test
 
 (* test that building a from s, and mutating one char of s, yields
    a string s' that is accepted by a *)
@@ -38,7 +38,7 @@ let test_mutation =
     Spelll.match_with a (Bytes.to_string s')
   in
   let name = "mutating s.[i] into s' still accepted by automaton(s)" in
-  QCheck.Test.make ~name gen test
+  QCheck.Test.make ~long_factor:5 ~count:100 ~name gen test
 
 (* test that, for an index, all retrieved strings are at a distance to
    the key that is not too high *)
@@ -61,7 +61,7 @@ let test_index =
       ) l
   in
   let name = "strings retrieved from automaton with limit:n are at distance <= n" in
-  QCheck.Test.make ~name gen test
+  QCheck.Test.make ~name ~long_factor:5 ~count:100 gen test
 
 let suite =
   [ 
