@@ -98,7 +98,7 @@ module type S = sig
       (** Add a pair string/value to the index. If a value was already present
          for this string it is replaced. *)
 
-    val remove : 'b t -> string_ -> 'b -> 'b t
+    val remove : 'b t -> string_ -> 'b t
       (** Remove a string (and its associated value, if any) from the index. *)
 
     val retrieve : limit:int -> 'b t -> string_ -> 'b klist
@@ -564,7 +564,7 @@ module Make(Str : STRING) = struct
         (function
           | Node (_, m) -> Node (Some value, m))
 
-    let remove trie s value =
+    let remove trie s =
       goto_leaf s trie
         (function
           | Node (_, m) -> Node (None, m))
