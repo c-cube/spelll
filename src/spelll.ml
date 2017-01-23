@@ -649,9 +649,9 @@ include Make(struct
   let length = String.length
   let get = String.get
   let of_list l =
-    let s = String.make (List.length l) ' ' in
-    List.iteri (fun i c -> s.[i] <- c) l;
-    s
+    let buf = Bytes.make (List.length l) ' ' in
+    List.iteri (fun i c -> Bytes.set buf i c) l;
+    Bytes.to_string buf
 end)
 
 let debug_print = debug_print output_char
