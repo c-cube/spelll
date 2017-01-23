@@ -28,7 +28,7 @@ let test_mutation =
     QCheck.make
       ~print:QCheck.Print.(triple string int char)
       ~small:(fun (s,_,_)->String.length s) 
-      ~shrink:QCheck.Shrink.(triple string int (fun c->QCheck.Iter.empty))
+      ~shrink:QCheck.Shrink.(triple string int (fun _->QCheck.Iter.empty))
       gen
   in
   let test (s,i,c) =

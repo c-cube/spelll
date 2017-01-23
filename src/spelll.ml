@@ -196,7 +196,7 @@ module Make(Str : STRING) = struct
           (* other transitions *)
           if j < limit then begin
             (* substitution *)
-            add_transition i j (Upon (Any, i+1, j+1)); 
+            add_transition i j (Upon (Any, i+1, j+1));
             (* deletion in indexed string *)
             add_transition i j (Upon (Any, i, j+1));
             (* addition to indexed string *)
@@ -338,7 +338,7 @@ module Make(Str : STRING) = struct
 
     let rec get_transitions_for_any nda acc transitions =
       match transitions with
-      | NDA.Upon (NDA.Char _, i, j) :: transitions' ->
+      | NDA.Upon (NDA.Char _, _, _) :: transitions' ->
           get_transitions_for_any nda acc transitions'
       | NDA.Upon (NDA.Any, i, j) :: transitions' ->
           let acc = NDAStateSet.add (i,j) acc in
