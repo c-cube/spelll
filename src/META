@@ -1,0 +1,13 @@
+# OASIS_START
+# DO NOT EDIT (digest: 9d1e9af5021675cd1ef85c67eeed9d69)
+version = "0.2"
+description =
+"Fuzzy string searching, using Levenshtein automaton. Can be used for spell-checking."
+requires = "bytes"
+archive(byte) = "spelll.cma"
+archive(byte, plugin) = "spelll.cma"
+archive(native) = "spelll.cmxa"
+archive(native, plugin) = "spelll.cmxs"
+exists_if = "spelll.cma"
+# OASIS_STOP
+
