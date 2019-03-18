@@ -1,28 +1,5 @@
 
-(*
-copyright (c) 2013, simon cruanes
-all rights reserved.
-
-redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
-redistributions of source code must retain the above copyright notice, this
-list of conditions and the following disclaimer.  redistributions in binary
-form must reproduce the above copyright notice, this list of conditions and the
-following disclaimer in the documentation and/or other materials provided with
-the distribution.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*)
+(* this file is part of Spelll. See `opam` for the license. *)
 
 (** {1 Levenshtein distance} *)
 
@@ -169,7 +146,7 @@ module Make(Str : STRING) = struct
     (* non deterministic automaton *)
     type t = transition list array array
 
-    let length nda = Array.length nda
+    let length (nda:t) = Array.length nda
 
     let rec mem_tr tr l = match tr, l with
       | _, [] -> false
@@ -278,7 +255,7 @@ module Make(Str : STRING) = struct
       let compare = Pervasives.compare
     end)
 
-    let set_to_string s =
+    let _set_to_string s =
       let b = Buffer.create 15 in
       Buffer.add_char b '{';
       NDAStateSet.iter
@@ -372,19 +349,19 @@ module Make(Str : STRING) = struct
     (* call [k] with every [transition'] that can be reached from [set], with
        a bool that states whether it's final *)
     let iterate_transition_set nda set k =
-      (*Printf.printf "iterate_transition at set %s\n" (set_to_string set);*)
+      (*Printf.printf "iterate_transition at set %s\n" (_set_to_string set);*)
       (* all possible "fixed char" transitions *)
       let chars = chars_from_set nda set in
       List.iter
         (fun c ->
           (*Printf.printf "iterate_transition follows %c (at %s)\n"
-            (Obj.magic c) (set_to_string set);*)
+            (Obj.magic c) (_set_to_string set);*)
           let set' = follow_transition nda set c in
           if not (NDAStateSet.is_empty set')
             then k (NDA.Char c) set';
         ) chars;
       (* remaining transitions, with only "Any" *)
-      (*Printf.printf "iterate transition follows * (at %s)\n" (set_to_string set);*)
+      (*Printf.printf "iterate transition follows * (at %s)\n" (_set_to_string set);*)
       let set' = follow_transition_any nda set in
       if not (NDAStateSet.is_empty set')
         then k NDA.Any set'
@@ -409,9 +386,9 @@ module Make(Str : STRING) = struct
         then set_final dfa set_i;
       iterate_transition_set nda set
         (fun c set' ->
-          (*Printf.printf "traverse %s --%c--> %s\n" (set_to_string set)
+          (*Printf.printf "traverse %s --%c--> %s\n" (_set_to_string set)
             (match c with NDA.Char c' -> Obj.magic c' | NDA.Any -> '*')
-            (set_to_string set');*)
+            (_set_to_string set');*)
           let set_i' = get_state dfa states set' in
           (* link set -> set' *)
           match c with
@@ -433,7 +410,7 @@ module Make(Str : STRING) = struct
       traverse nda dfa states set;
       (*StateSetMap.iter
         (fun set i ->
-          Printf.printf "set %s --> state %d\n" (set_to_string set) i
+          Printf.printf "set %s --> state %d\n" (_set_to_string set) i
         ) !states;*)
       dfa
 
@@ -469,12 +446,6 @@ module Make(Str : STRING) = struct
 
   let of_list ~limit l =
     of_string ~limit (Str.of_list l)
-
-  type match_result =
-    | TooFar
-    | Distance of int
-
-  exception FoundDistance of int
 
   let rec __find_char c l = match l with
     | [] -> raise Not_found

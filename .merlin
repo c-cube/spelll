@@ -1,6 +1,0 @@
-S src
-S tests
-B _build/src
-B _build/tests/
-PKG qcheck
-FLG -w +a-4-44@8 -safe-string

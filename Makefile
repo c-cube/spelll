@@ -1,52 +1,14 @@
-# OASIS_START
-# DO NOT EDIT (digest: a3c674b4239234cbbe53afe090018954)
 
-SETUP = ocaml setup.ml
+build:
+	@dune build @all
 
-build: setup.data
-	$(SETUP) -build $(BUILDFLAGS)
-
-doc: setup.data build
-	$(SETUP) -doc $(DOCFLAGS)
-
-test: setup.data build
-	$(SETUP) -test $(TESTFLAGS)
-
-all:
-	$(SETUP) -all $(ALLFLAGS)
-
-install: setup.data
-	$(SETUP) -install $(INSTALLFLAGS)
-
-uninstall: setup.data
-	$(SETUP) -uninstall $(UNINSTALLFLAGS)
-
-reinstall: setup.data
-	$(SETUP) -reinstall $(REINSTALLFLAGS)
+dev: build test
 
 clean:
-	$(SETUP) -clean $(CLEANFLAGS)
+	@dune clean
 
-distclean:
-	$(SETUP) -distclean $(DISTCLEANFLAGS)
-
-setup.data:
-	$(SETUP) -configure $(CONFIGUREFLAGS)
-
-configure:
-	$(SETUP) -configure $(CONFIGUREFLAGS)
-
-.PHONY: build doc test all install uninstall reinstall clean distclean configure
-
-# OASIS_STOP
-
-push_doc: doc
-	scp -r spelll.docdir/* cedeela.fr:~/simon/root/software/spelll/
-
-tags:
-	otags *.ml *.mli
+test:
+	@dune runtest --force --no-buffer
 
 test_long: build
-	./run_qcheck.native --long -v
-
-.PHONY: push_doc tags
+	@dune exec ./tests/run_qcheck.exe --long -v

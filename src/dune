@@ -1,0 +1,5 @@
+
+(library
+  (name spelll)
+  (public_name spelll)
+  (flags :standard -warn-error -3 -safe-string -color always))

@@ -15,5 +15,4 @@ _build
 .session
 TAGS
 *.docdir
-setup.log
-setup.data
+.merlin

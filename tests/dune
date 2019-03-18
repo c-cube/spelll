@@ -1,0 +1,8 @@
+
+(executable
+  (name run_qcheck)
+  (libraries spelll qcheck))
+
+(alias
+  (name runtest)
+  (action (run ./run_qcheck.exe)))

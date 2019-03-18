@@ -71,4 +71,4 @@ let suite =
   ]
 
 let () =
-  QCheck_runner.run_tests_main suite
+  exit @@ QCheck_runner.run_tests ~verbose:true ~colors:true suite
