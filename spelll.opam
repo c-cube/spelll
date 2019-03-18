@@ -17,6 +17,6 @@ depends: [
 ]
 tags: [ "spell" "levenshtein" "automaton" "typo" "edit" "distance"]
 homepage: "https://github.com/c-cube/spelll"
-doc: "http://cedeela.fr/~simon/software/spelll/"
+doc: "http://c-cube.github.io/spelll/"
 dev-repo: "git://github.com/c-cube/spelll"
 bug-reports: "https://github.com/c-cube/spelll/issues"

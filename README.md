@@ -2,7 +2,7 @@
 
 Fuzzy string searching, using Levenshtein automaton. Can be used for spell-checking.
 
-API documentation can be found [here](http://cedeela.fr/~simon/software/spelll/Spelll.html),
+API documentation can be found [here](http://c-cube.github.io/spelll/),
 and the source code [here](https://github.com/c-cube/spelll).
 
 Some examples:
