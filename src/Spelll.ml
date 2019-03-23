@@ -24,71 +24,71 @@ module type S = sig
   (** {6 Edit Distance} *)
 
   val edit_distance : string_ -> string_ -> int
-    (** Edition distance between two strings. This satisfies the classical
-       distance axioms: it is always positive, symmetric, and satisfies
-       the formula [distance a b + distance b c >= distance a c] *)
+  (** Edition distance between two strings. This satisfies the classical
+      distance axioms: it is always positive, symmetric, and satisfies
+      the formula [distance a b + distance b c >= distance a c] *)
 
   (** {6 Automaton}
-  An automaton, built from a string [s] and a limit [n], that accepts
-  every string that is at distance at most [n] from [s]. *)
+      An automaton, built from a string [s] and a limit [n], that accepts
+      every string that is at distance at most [n] from [s]. *)
 
   type automaton
-    (** Levenshtein automaton *)
+  (** Levenshtein automaton *)
 
   val of_string : limit:int -> string_ -> automaton
-    (** Build an automaton from a string, with a maximal distance [limit].
-        The automaton will accept strings whose {!edit_distance} to the
-        parameter is at most [limit]. *)
+  (** Build an automaton from a string, with a maximal distance [limit].
+      The automaton will accept strings whose {!edit_distance} to the
+      parameter is at most [limit]. *)
 
   val of_list : limit:int -> char_ list -> automaton
-    (** Build an automaton from a list, with a maximal distance [limit] *)
+  (** Build an automaton from a list, with a maximal distance [limit] *)
 
   val debug_print : (out_channel -> char_ -> unit) ->
-                    out_channel -> automaton -> unit
-    (** Output the automaton's structure on the given channel. *)
+    out_channel -> automaton -> unit
+  (** Output the automaton's structure on the given channel. *)
 
   val match_with : automaton -> string_ -> bool
-    (** [match_with a s] matches the string [s] against [a], and returns
-        [true] if the distance from [s] to the word represented by [a] is smaller
-        than the limit used to build [a] *)
+  (** [match_with a s] matches the string [s] against [a], and returns
+      [true] if the distance from [s] to the word represented by [a] is smaller
+      than the limit used to build [a] *)
 
   (** {6 Index for one-to-many matching} *)
 
   module Index : sig
     type 'b t
-      (** Index that maps strings to values of type 'b. Internally it is
-         based on a trie. A string can only map to one value. *)
+    (** Index that maps strings to values of type 'b. Internally it is
+        based on a trie. A string can only map to one value. *)
 
     val empty : 'b t
-      (** Empty index *)
+    (** Empty index *)
 
     val is_empty : _ t -> bool
 
     val add : 'b t -> string_ -> 'b -> 'b t
-      (** Add a pair string/value to the index. If a value was already present
-         for this string it is replaced. *)
+    (** Add a pair string/value to the index. If a value was already present
+        for this string it is replaced. *)
 
     val remove : 'b t -> string_ -> 'b t
-      (** Remove a string (and its associated value, if any) from the index. *)
+    (** Remove a string (and its associated value, if any) from the index. *)
 
     val retrieve : limit:int -> 'b t -> string_ -> 'b Seq.t 
-      (** Lazy list of objects associated to strings close to the query string *)
+    (** Lazy list of objects associated to strings close to the query string *)
 
     val retrieve_l : limit:int -> 'b t -> string_ -> 'b list
     (** List of objects associated to strings close to the query string
         @since 0.3 *)
 
     val of_list : (string_ * 'b) list -> 'b t
-      (** Build an index from a list of pairs of strings and values *)
+    (** Build an index from a list of pairs of strings and values *)
 
     val to_list : 'b t -> (string_ * 'b) list
-      (** Extract a list of pairs from an index *)
+    (** Extract a list of pairs from an index *)
 
     val fold : ('a -> string_ -> 'b -> 'a) -> 'a -> 'b t -> 'a
-      (** Fold over the stored pairs string/value *)
+    (** Fold over the stored pairs string/value *)
 
     val iter : (string_ -> 'b -> unit) -> 'b t -> unit
-      (** Iterate on the pairs *)
+    (** Iterate on the pairs *)
 
     val to_seq : 'b t -> (string_ * 'b) Seq.t
     (** Conversion to an iterator
@@ -102,11 +102,11 @@ module Make(Str : STRING) = struct
 
   let edit_distance s1 s2 =
     if Str.length s1 = 0
-      then Str.length s2
+    then Str.length s2
     else if Str.length s2 = 0
-      then Str.length s1
+    then Str.length s1
     else if s1 = s2
-      then 0
+    then 0
     else begin
       (* distance vectors (v0=previous, v1=current) *)
       let v0 = Array.make (Str.length s2 + 1) 0 in
@@ -152,7 +152,7 @@ module Make(Str : STRING) = struct
       | Epsilon (i,j), Epsilon(i',j')::_ -> i=i' && j=j'
       | Upon (Any,i,j), Upon(Any,i',j')::_ when i=i' && j=j' -> true
       | Upon (Char c,i,j), Upon(Char c',i',j')::_
-          when Str.compare_char c c' = 0 && i=i' && j=j' -> true
+        when Str.compare_char c c' = 0 && i=i' && j=j' -> true
       | _, _::l' -> mem_tr tr l'
 
     (* build NDA from the string *)
@@ -161,7 +161,7 @@ module Make(Str : STRING) = struct
       let m = Array.make_matrix (len +1) (limit+1) [] in
       let add_transition i j tr =
         if not (mem_tr tr m.(i).(j))
-          then m.(i).(j) <- tr :: m.(i).(j)
+        then m.(i).(j) <- tr :: m.(i).(j)
       in
       (* internal transitions *)
       for i = 0 to len-1 do
@@ -182,7 +182,7 @@ module Make(Str : STRING) = struct
       for j = 0 to limit do
         (* deletions at the end *)
         if j < limit
-          then add_transition len j (Upon (Any, len, j+1));
+        then add_transition len j (Upon (Any, len, j+1));
         (* win in any case *)
         add_transition len j Success;
       done;
@@ -233,13 +233,13 @@ module Make(Str : STRING) = struct
     let rec __mem_tr tr l = match tr, l with
       | _, [] -> false
       | (c,i), (c',i')::l' ->
-          (i=i' && compare c c' = 0)
-          || __mem_tr tr l'
+        (i=i' && compare c c' = 0)
+        || __mem_tr tr l'
 
     (* add transition *)
     let add_transition dfa i tr =
       if not (__mem_tr tr dfa.transitions.(i))
-        then dfa.transitions.(i) <- tr :: dfa.transitions.(i)
+      then dfa.transitions.(i) <- tr :: dfa.transitions.(i)
 
     let add_otherwise dfa i j =
       dfa.otherwise.(i) <- j
@@ -249,9 +249,9 @@ module Make(Str : STRING) = struct
 
     (* set of pairs of ints: used for representing a set of states of the NDA *)
     module NDAStateSet = Set.Make(struct
-      type t = int * int
-      let compare = Pervasives.compare
-    end)
+        type t = int * int
+        let compare = Pervasives.compare
+      end)
 
     let _set_to_string s =
       let b = Buffer.create 15 in
@@ -266,15 +266,15 @@ module Make(Str : STRING) = struct
     let chars_from_set nda set =
       NDAStateSet.fold
         (fun state acc ->
-          let transitions = NDA.get nda state in
-          List.fold_left
-            (fun acc tr -> match tr with
-              | NDA.Upon (NDA.Char c, _, _) ->
+           let transitions = NDA.get nda state in
+           List.fold_left
+             (fun acc tr -> match tr with
+                | NDA.Upon (NDA.Char c, _, _) ->
                   if List.exists (fun c' -> Str.compare_char c c' = 0) acc
                   then acc
                   else c :: acc (* new char! *)
-              | _ -> acc
-            ) acc transitions
+                | _ -> acc
+             ) acc transitions
         ) set []
 
     (* saturate current set w.r.t epsilon links *)
@@ -288,10 +288,10 @@ module Make(Str : STRING) = struct
         set := NDAStateSet.add state !set;
         List.iter
           (fun tr' -> match tr' with
-            | NDA.Epsilon (i,j) ->
-                if not (NDAStateSet.mem (i,j) !set)
-                  then Queue.push (i,j) q
-            | _ -> ()
+             | NDA.Epsilon (i,j) ->
+               if not (NDAStateSet.mem (i,j) !set)
+               then Queue.push (i,j) q
+             | _ -> ()
           ) (NDA.get nda state)
       done;
       !set
@@ -301,23 +301,23 @@ module Make(Str : STRING) = struct
     let rec get_transition_for_char nda c acc transitions =
       match transitions with
       | NDA.Upon (NDA.Char c', i, j) :: transitions' when Str.compare_char c c' = 0 ->
-          (* follow same char *)
-          let acc = NDAStateSet.add (i, j) acc in
-          get_transition_for_char nda c acc transitions'
+        (* follow same char *)
+        let acc = NDAStateSet.add (i, j) acc in
+        get_transition_for_char nda c acc transitions'
       | NDA.Upon (NDA.Any, i, j) :: transitions' ->
-          (* follow '*' *)
-          let acc = NDAStateSet.add (i,j) acc in
-          get_transition_for_char nda c acc transitions'
+        (* follow '*' *)
+        let acc = NDAStateSet.add (i,j) acc in
+        get_transition_for_char nda c acc transitions'
       | _ :: transitions' -> get_transition_for_char nda c acc transitions'
       | [] ->  acc
 
     let rec get_transitions_for_any nda acc transitions =
       match transitions with
       | NDA.Upon (NDA.Char _, _, _) :: transitions' ->
-          get_transitions_for_any nda acc transitions'
+        get_transitions_for_any nda acc transitions'
       | NDA.Upon (NDA.Any, i, j) :: transitions' ->
-          let acc = NDAStateSet.add (i,j) acc in
-          get_transitions_for_any nda acc transitions'
+        let acc = NDAStateSet.add (i,j) acc in
+        get_transitions_for_any nda acc transitions'
       | _:: transitions' -> get_transitions_for_any nda acc transitions'
       | [] -> acc
 
@@ -325,22 +325,22 @@ module Make(Str : STRING) = struct
        and a boolean indicating whether it's final *)
     let follow_transition nda set c =
       let set' = NDAStateSet.fold
-        (fun state acc ->
-          let transitions = NDA.get nda state in
-          (* among possible transitions, follow the one that matches c
-             the most closely *)
-          get_transition_for_char nda c acc transitions
-        ) set NDAStateSet.empty
+          (fun state acc ->
+             let transitions = NDA.get nda state in
+             (* among possible transitions, follow the one that matches c
+                the most closely *)
+             get_transition_for_char nda c acc transitions
+          ) set NDAStateSet.empty
       in
       saturate_epsilon nda set'
 
     let follow_transition_any nda set =
       let set' = NDAStateSet.fold
-        (fun state acc ->
-          let transitions = NDA.get nda state in
-          (* among possible transitions, follow the ones that are labelled with "*" *)
-          get_transitions_for_any nda acc transitions
-        ) set NDAStateSet.empty
+          (fun state acc ->
+             let transitions = NDA.get nda state in
+             (* among possible transitions, follow the ones that are labelled with "*" *)
+             get_transitions_for_any nda acc transitions
+          ) set NDAStateSet.empty
       in
       saturate_epsilon nda set'
 
@@ -352,22 +352,22 @@ module Make(Str : STRING) = struct
       let chars = chars_from_set nda set in
       List.iter
         (fun c ->
-          (*Printf.printf "iterate_transition follows %c (at %s)\n"
-            (Obj.magic c) (_set_to_string set);*)
-          let set' = follow_transition nda set c in
-          if not (NDAStateSet.is_empty set')
-            then k (NDA.Char c) set';
+           (*Printf.printf "iterate_transition follows %c (at %s)\n"
+             (Obj.magic c) (_set_to_string set);*)
+           let set' = follow_transition nda set c in
+           if not (NDAStateSet.is_empty set')
+           then k (NDA.Char c) set';
         ) chars;
       (* remaining transitions, with only "Any" *)
       (*Printf.printf "iterate transition follows * (at %s)\n" (_set_to_string set);*)
       let set' = follow_transition_any nda set in
       if not (NDAStateSet.is_empty set')
-        then k NDA.Any set'
+      then k NDA.Any set'
 
     module StateSetMap = Map.Make(NDAStateSet)
 
     (* get the state that corresponds to the given set of NDA states.
-      [states] is a map [nda set] -> [nfa state] *)
+       [states] is a map [nda set] -> [nfa state] *)
     let get_state dfa states set =
       try StateSetMap.find set !states
       with Not_found ->
@@ -381,21 +381,21 @@ module Make(Str : STRING) = struct
       (* does this set lead to success? *)
       let is_final = NDAStateSet.exists (NDA.is_final nda) set in
       if is_final
-        then set_final dfa set_i;
+      then set_final dfa set_i;
       iterate_transition_set nda set
         (fun c set' ->
-          (*Printf.printf "traverse %s --%c--> %s\n" (_set_to_string set)
-            (match c with NDA.Char c' -> Obj.magic c' | NDA.Any -> '*')
-            (_set_to_string set');*)
-          let set_i' = get_state dfa states set' in
-          (* link set -> set' *)
-          match c with
-          | NDA.Char c' ->
-              add_transition dfa set_i (c', set_i');
-              traverse nda dfa states set'
-          | NDA.Any ->
-              add_otherwise dfa set_i set_i';
-              traverse nda dfa states set'
+           (*Printf.printf "traverse %s --%c--> %s\n" (_set_to_string set)
+             (match c with NDA.Char c' -> Obj.magic c' | NDA.Any -> '*')
+             (_set_to_string set');*)
+           let set_i' = get_state dfa states set' in
+           (* link set -> set' *)
+           match c with
+           | NDA.Char c' ->
+             add_transition dfa set_i (c', set_i');
+             traverse nda dfa states set'
+           | NDA.Any ->
+             add_otherwise dfa set_i set_i';
+             traverse nda dfa states set'
         )
 
     let of_nda nda =
@@ -427,12 +427,12 @@ module Make(Str : STRING) = struct
     for i = 0 to dfa.DFA.len-1 do
       let transitions = DFA.get dfa i in
       if DFA.is_final dfa i
-        then Printf.fprintf oc "  success %d\n" i;
+      then Printf.fprintf oc "  success %d\n" i;
       List.iter
         (fun (c, j) -> Printf.fprintf oc "  %d --%a--> %d\n" i pp_char c j ) transitions;
       let o = DFA.otherwise dfa i in
       if o >= 0
-        then Printf.fprintf oc "  %d --*--> %d\n" i o
+      then Printf.fprintf oc "  %d --*--> %d\n" i o
     done
 
   type automaton = DFA.t
@@ -448,12 +448,12 @@ module Make(Str : STRING) = struct
   let rec __find_char c l = match l with
     | [] -> raise Not_found
     | (c', next) :: l' ->
-        if compare c c' = 0
-        then next
-        else __find_char c l'
+      if compare c c' = 0
+      then next
+      else __find_char c l'
 
   (* transition for [c] in state [i] of [dfa];
-    @raise Not_found if no transition matches *)
+     @raise Not_found if no transition matches *)
   let __transition dfa i c =
     let transitions = DFA.get dfa i in
     try
@@ -461,8 +461,8 @@ module Make(Str : STRING) = struct
     with Not_found ->
       let o = DFA.otherwise dfa i in
       if o >= 0
-        then o
-        else raise Not_found
+      then o
+      else raise Not_found
 
   let match_with dfa a =
     let len = Str.length a in
@@ -487,9 +487,9 @@ module Make(Str : STRING) = struct
     type key = char_
 
     module M = Map.Make(struct
-      type t = key
-      let compare = Str.compare_char
-    end)
+        type t = key
+        let compare = Str.compare_char
+      end)
 
     type 'b t =
       | Node of 'b option * 'b t M.t
@@ -509,22 +509,22 @@ module Make(Str : STRING) = struct
     let goto_leaf s node k =
       let len = Str.length s in
       (* insert the value in given [node], assuming the current index
-        in [arr] is [i]. [k] is given the resulting tree. *)
+         in [arr] is [i]. [k] is given the resulting tree. *)
       let rec goto node i rebuild = match node with
         | _ when i = len ->
-            let node' = k node in
-            rebuild node'
+          let node' = k node in
+          rebuild node'
         | Node (opt, m) ->
-            let c = Str.get s i in
-            let t' =
-              try M.find c m
-              with Not_found -> empty
-            in
-            goto t' (i+1)
-              (fun t'' ->
-                if is_empty t''
-                  then rebuild (Node (opt, M.remove c m))
-                  else rebuild (Node (opt, M.add c t'' m)))
+          let c = Str.get s i in
+          let t' =
+            try M.find c m
+            with Not_found -> empty
+          in
+          goto t' (i+1)
+            (fun t'' ->
+               if is_empty t''
+               then rebuild (Node (opt, M.remove c m))
+               else rebuild (Node (opt, M.add c t'' m)))
       in
       goto node 0 (fun t -> t)
 
@@ -546,21 +546,21 @@ module Make(Str : STRING) = struct
       let rec traverse node i ~(fk:'a Seq.t) () =
         match node with
         | Node (opt, m) ->
-            (* all alternatives: continue exploring [m], or call [fk] *)
-            let fk =
-              M.fold
-                (fun c node' fk ->
-                  try
-                    let next = __transition dfa i c in
-                    traverse node' next ~fk
-                  with Not_found -> fk)
-                m fk
-            in
-            match opt with
-            | Some v when DFA.is_final dfa i ->
-                (* yield one solution now *)
-                Seq.Cons (v, fk)
-            | _ -> fk ()   (* fail... or explore subtrees *)
+          (* all alternatives: continue exploring [m], or call [fk] *)
+          let fk =
+            M.fold
+              (fun c node' fk ->
+                 try
+                   let next = __transition dfa i c in
+                   traverse node' next ~fk
+                 with Not_found -> fk)
+              m fk
+          in
+          match opt with
+          | Some v when DFA.is_final dfa i ->
+            (* yield one solution now *)
+            Seq.Cons (v, fk)
+          | _ -> fk ()   (* fail... or explore subtrees *)
       in
       traverse idx 0 ~fk:Seq.empty
 
@@ -574,16 +574,16 @@ module Make(Str : STRING) = struct
     let fold f acc idx =
       let rec explore acc trail node = match node with
         | Node (opt, m) ->
-            (* first, yield current value, if any *)
-            let acc = match opt with
-              | None -> acc
-              | Some v ->
-                  let str = Str.of_list (List.rev trail) in
-                  f acc str v
-            in
-            M.fold
-              (fun c node' acc -> explore acc (c::trail) node')
-              m acc
+          (* first, yield current value, if any *)
+          let acc = match opt with
+            | None -> acc
+            | Some v ->
+              let str = Str.of_list (List.rev trail) in
+              f acc str v
+          in
+          M.fold
+            (fun c node' acc -> explore acc (c::trail) node')
+            m acc
       in
       explore acc [] idx
 
@@ -597,33 +597,33 @@ module Make(Str : STRING) = struct
       let rec traverse node trail ~(fk:(string_*'a) Seq.t) () =
         match node with
         | Node (opt, m) ->
-            (* all alternatives: continue exploring [m], or call [fk] *)
-            let fk =
-              M.fold
-                (fun c node' fk -> traverse node' (c::trail) ~fk)
-                m fk
-            in
-            match opt with
-            | Some v ->
-                let str = Str.of_list (List.rev trail) in
-                Seq.Cons ((str,v), fk)
-            | _ -> fk ()   (* fail... or explore subtrees *)
+          (* all alternatives: continue exploring [m], or call [fk] *)
+          let fk =
+            M.fold
+              (fun c node' fk -> traverse node' (c::trail) ~fk)
+              m fk
+          in
+          match opt with
+          | Some v ->
+            let str = Str.of_list (List.rev trail) in
+            Seq.Cons ((str,v), fk)
+          | _ -> fk ()   (* fail... or explore subtrees *)
       in
       traverse idx [] ~fk:Seq.empty
   end
 end
 
 include Make(struct
-  type t = string
-  type char_ = char
-  let compare_char = Char.compare
-  let length = String.length
-  let get = String.get
-  let of_list l =
-    let buf = Bytes.make (List.length l) ' ' in
-    List.iteri (fun i c -> Bytes.set buf i c) l;
-    Bytes.to_string buf
-end)
+    type t = string
+    type char_ = char
+    let compare_char = Char.compare
+    let length = String.length
+    let get = String.get
+    let of_list l =
+      let buf = Bytes.make (List.length l) ' ' in
+      List.iteri (fun i c -> Bytes.set buf i c) l;
+      Bytes.to_string buf
+  end)
 
 let debug_print = debug_print output_char
 
