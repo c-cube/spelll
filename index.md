@@ -5,4 +5,5 @@ Fuzzy string searching, using Levenshtein automaton. Can be used for spell-check
 
 ## Docs
 
+- [0.3](0.3)
 - [0.2](0.2)
