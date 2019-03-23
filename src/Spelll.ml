@@ -13,16 +13,9 @@ module type STRING = sig
   val compare_char : char_ -> char_ -> int
 end
 
-(** Continuation list *)
-type 'a klist =
-  [
-  | `Nil
-  | `Cons of 'a * (unit -> 'a klist)
-  ]
-
-let rec klist_to_list = function
-  | `Nil -> []
-  | `Cons (x,k) -> x :: klist_to_list (k ())
+let list_of_seq s =
+  let l = Seq.fold_left (fun acc x->x::acc) [] s in
+  List.rev l
 
 module type S = sig
   type char_
@@ -78,8 +71,12 @@ module type S = sig
     val remove : 'b t -> string_ -> 'b t
       (** Remove a string (and its associated value, if any) from the index. *)
 
-    val retrieve : limit:int -> 'b t -> string_ -> 'b klist
+    val retrieve : limit:int -> 'b t -> string_ -> 'b Seq.t 
       (** Lazy list of objects associated to strings close to the query string *)
+
+    val retrieve_l : limit:int -> 'b t -> string_ -> 'b list
+    (** List of objects associated to strings close to the query string
+        @since 0.3 *)
 
     val of_list : (string_ * 'b) list -> 'b t
       (** Build an index from a list of pairs of strings and values *)
@@ -93,8 +90,9 @@ module type S = sig
     val iter : (string_ -> 'b -> unit) -> 'b t -> unit
       (** Iterate on the pairs *)
 
-    val to_klist : 'b t -> (string_ * 'b) klist
-      (** Conversion to an iterator *)
+    val to_seq : 'b t -> (string_ * 'b) Seq.t
+    (** Conversion to an iterator
+        @since 0.3 *)
   end
 end
 
@@ -545,7 +543,7 @@ module Make(Str : STRING) = struct
       let dfa = of_string ~limit s in
       (* traverse at index i in automaton, with
           [fk] the failure continuation *)
-      let rec traverse node i ~(fk:unit->'a klist) =
+      let rec traverse node i ~(fk:'a Seq.t) () =
         match node with
         | Node (opt, m) ->
             (* all alternatives: continue exploring [m], or call [fk] *)
@@ -554,17 +552,19 @@ module Make(Str : STRING) = struct
                 (fun c node' fk ->
                   try
                     let next = __transition dfa i c in
-                    (fun () -> traverse node' next ~fk)
+                    traverse node' next ~fk
                   with Not_found -> fk)
                 m fk
             in
             match opt with
             | Some v when DFA.is_final dfa i ->
                 (* yield one solution now *)
-                `Cons (v, fk)
+                Seq.Cons (v, fk)
             | _ -> fk ()   (* fail... or explore subtrees *)
       in
-      traverse idx 0 ~fk:(fun () -> `Nil)
+      traverse idx 0 ~fk:Seq.empty
+
+    let retrieve_l ~limit idx s = list_of_seq @@ retrieve ~limit idx s
 
     let of_list l =
       List.fold_left
@@ -593,23 +593,23 @@ module Make(Str : STRING) = struct
     let to_list idx =
       fold (fun acc str v -> (str,v) :: acc) [] idx
 
-    let to_klist idx =
-      let rec traverse node trail ~(fk:unit->(string_*'a) klist) =
+    let to_seq idx =
+      let rec traverse node trail ~(fk:(string_*'a) Seq.t) () =
         match node with
         | Node (opt, m) ->
             (* all alternatives: continue exploring [m], or call [fk] *)
             let fk =
               M.fold
-                (fun c node' fk () -> traverse node' (c::trail) ~fk)
+                (fun c node' fk -> traverse node' (c::trail) ~fk)
                 m fk
             in
             match opt with
             | Some v ->
                 let str = Str.of_list (List.rev trail) in
-                `Cons ((str,v), fk)
+                Seq.Cons ((str,v), fk)
             | _ -> fk ()   (* fail... or explore subtrees *)
       in
-      traverse idx [] ~fk:(fun () -> `Nil)
+      traverse idx [] ~fk:Seq.empty
   end
 end
 

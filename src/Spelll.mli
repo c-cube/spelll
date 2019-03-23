@@ -23,24 +23,20 @@ module type STRING = sig
   val compare_char : char_ -> char_ -> int
 end
 
-(** {2 Continuation list}
+(** {2 Iterators}
 
-This data structure is used to represent a list of result that is
-evaluated only as far as the user wants. If the user only wants a few elements,
-she doesn't pay for the remaining ones.
+    We use {!Seq.t} to provide universal iterators.
+    This data structure is used to represent a list of result that is
+    evaluated only as far as the user wants. If the user only wants a few elements,
+    they don't pay for the remaining ones.
 
-In particular, when matching a string against a (big) set of indexed
-strings, we return a continuation list so that, even if there are many results,
-only those actually asked for are evaluated. *)
+    In particular, when matching a string against a (big) set of indexed
+    strings, we return a continuation list so that, even if there are many results,
+    only those actually asked for are evaluated. *)
 
-type 'a klist =
-  [
-  | `Nil
-  | `Cons of 'a * (unit -> 'a klist)
-  ]
+val list_of_seq : 'a Seq.t -> 'a list
+(** Helper. *)
 
-val klist_to_list : 'a klist -> 'a list
-  (** Helper. *)
 
 (** {2 Signature}
 
@@ -55,18 +51,16 @@ The signature for a given string representation provides 3 main things:
 
 A possible use of the index could be:
 {[
-open Batteries;;
 
-let words = File.with_file_in "/usr/share/dict/english"
-  (fun i -> IO.read_all i |> String.nsplit ~by:"\\n");;
+let words = CCIO.with_in "/usr/share/dict/english" CCIO.read_lines_l ;;
 
 let words = List.map (fun s->s,s) words;;
 let idx = Spelll.Index.of_list words;;
 
-Spelll.Index.retrieve ~limit:1 idx "hell" |> Spelll.klist_to_list;;
+Spelll.Index.retrieve_l ~limit:1 idx "hell" ;;
 ]}
 
-Here we use {{:https://github.com/ocaml-batteries-team/batteries-included}Batteries}
+Here we use {{:https://github.com/c-cube/ocaml-containers} Containers}
 to read a dictionary file into a list of words; then we create an index that
 maps every string to itself (a set of strings, really), and finally
 we find every string at distance at most 1 from "hell" (including "hello"
@@ -128,8 +122,12 @@ module type S = sig
     val remove : 'b t -> string_ -> 'b t
       (** Remove a string (and its associated value, if any) from the index. *)
 
-    val retrieve : limit:int -> 'b t -> string_ -> 'b klist
+    val retrieve : limit:int -> 'b t -> string_ -> 'b Seq.t 
       (** Lazy list of objects associated to strings close to the query string *)
+
+    val retrieve_l : limit:int -> 'b t -> string_ -> 'b list
+    (** List of objects associated to strings close to the query string
+        @since 0.3 *)
 
     val of_list : (string_ * 'b) list -> 'b t
       (** Build an index from a list of pairs of strings and values *)
@@ -143,8 +141,9 @@ module type S = sig
     val iter : (string_ -> 'b -> unit) -> 'b t -> unit
       (** Iterate on the pairs *)
 
-    val to_klist : 'b t -> (string_ * 'b) klist
-      (** Conversion to an iterator *)
+    val to_seq : 'b t -> (string_ * 'b) Seq.t
+    (** Conversion to an iterator
+        @since 0.3 *)
   end
 end
 
