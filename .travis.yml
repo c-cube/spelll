@@ -8,7 +8,7 @@ env:
   - PINS="spelll:."
   - DISTRO="ubuntu-16.04"
   matrix:
-  - PACKAGE="spelll" OCAML_VERSION="4.02.3" TESTS=false
+  - PACKAGE="spelll" OCAML_VERSION="4.02.3"
   - PACKAGE="spelll" OCAML_VERSION="4.03"
     #- PACKAGE="spelll" OCAML_VERSION="4.04"
     #- PACKAGE="spelll" OCAML_VERSION="4.05" EXTRA_DEPS="base-bigarray"
