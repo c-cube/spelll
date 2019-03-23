@@ -3,4 +3,4 @@
   (name spelll)
   (public_name spelll)
   (libraries seq)
-  (flags :standard -warn-error -3 -safe-string -color always))
+  (flags :standard -warn-error -3 -safe-string))
