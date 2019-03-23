@@ -12,3 +12,6 @@ test:
 
 test_long: build
 	@dune exec ./tests/run_qcheck.exe --long -v
+
+watch:
+	@dune build @all -w
