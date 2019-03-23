@@ -10,9 +10,10 @@ build: [
   ["dune" "build" "@doc" "-p" name "-j" jobs] {with-doc}
 ]
 depends: [
-  "dune"
+  "dune" {build}
   "base-bytes"
   "qcheck" {with-test}
+  "mdx" {with-test}
   "odoc" {with-doc}
 ]
 tags: [ "spell" "levenshtein" "automaton" "typo" "edit" "distance"]
