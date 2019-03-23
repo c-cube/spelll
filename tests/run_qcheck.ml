@@ -1,6 +1,6 @@
 (* quickcheck for Spelll *)
 
-let strg = QCheck.Gen.(string_size ~gen:printable (0--20))
+let strg = QCheck.Gen.(string_size ~gen:printable (0--12))
 let strarb = QCheck.(string_gen_of_size Gen.(0 -- 20) Gen.printable)
 
 (* test that automaton accepts its string *)
@@ -44,7 +44,7 @@ let test_mutation =
    the key that is not too high *)
 let test_index =
   let gen = QCheck.Gen.(
-    list_size (1--30) strg >>= fun l ->
+    list_size (1--20) strg >>= fun l ->
     let l = List.map (fun s->s,s) l in
     return (List.map fst l, Spelll.Index.of_list l)
   ) in
@@ -54,8 +54,7 @@ let test_index =
   let test (l, idx) =
     List.for_all
       (fun s ->
-        let retrieved = Spelll.Index.retrieve ~limit:2 idx s
-          |> Spelll.klist_to_list in
+        let retrieved = Spelll.Index.retrieve_l ~limit:2 idx s in
         List.for_all
           (fun s' -> Spelll.edit_distance s s' <= 2) retrieved
       ) l
