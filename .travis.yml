@@ -13,4 +13,5 @@ env:
     #- PACKAGE="spelll" OCAML_VERSION="4.04"
     #- PACKAGE="spelll" OCAML_VERSION="4.05" EXTRA_DEPS="base-bigarray"
   - PACKAGE="spelll" OCAML_VERSION="4.06"
-  - PACKAGE="spelll" OCAML_VERSION="4.07"
+    #- PACKAGE="spelll" OCAML_VERSION="4.07"
+  - PACKAGE="spelll" OCAML_VERSION="4.10"
