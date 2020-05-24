@@ -68,9 +68,13 @@ let test_big =
     let idx = ref Spelll.Index.empty in
     let l = ref [] in
     let add x = l := x :: !l; idx := Spelll.Index.add !idx x x in
-    for i=0 to 300_000 do
-      add @@ Printf.sprintf "foobar%dhello%dworld" i i;
-      add @@ Printf.sprintf "fo0bar%dhello%dworld" i i;
+    for i=0 to 5_000 do
+      for j=0 to 40 do
+        List.iter
+          (fun s ->
+            add @@ Printf.sprintf "foo-%d-%s-%d-bar" i s j)
+          [""; "a"; "b"; "c"; "d"];
+      done
     done;
     !l, !idx
   ) in
