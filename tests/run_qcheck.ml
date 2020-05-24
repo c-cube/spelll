@@ -27,7 +27,7 @@ let test_mutation =
   let gen =
     QCheck.make
       ~print:QCheck.Print.(triple string int char)
-      ~small:(fun (s,_,_)->String.length s) 
+      ~small:(fun (s,_,_)->String.length s)
       ~shrink:QCheck.Shrink.(triple string int (fun _->QCheck.Iter.empty))
       gen
   in
@@ -62,11 +62,37 @@ let test_index =
   let name = "strings retrieved from automaton with limit:n are at distance <= n" in
   QCheck.Test.make ~name ~long_factor:5 ~count:100 gen test
 
+let test_big =
+  (* make a large index *)
+  let idx = lazy (
+    let idx = ref Spelll.Index.empty in
+    let l = ref [] in
+    let add x = l := x :: !l; idx := Spelll.Index.add !idx x x in
+    for i=0 to 300_000 do
+      add @@ Printf.sprintf "foobar%dhello%dworld" i i;
+      add @@ Printf.sprintf "fo0bar%dhello%dworld" i i;
+    done;
+    !l, !idx
+  ) in
+  let gen = QCheck.Gen.(
+      return () >>= fun () ->
+      let lazy (l,idx) = idx in
+      (fun x -> x,idx) <$> oneofl l
+    ) |> QCheck.make
+  in
+  let test (x, idx) =
+    let res = Spelll.Index.retrieve_l ~limit:1 idx x in
+    List.mem x res
+  in
+  let name = "test big index" in
+  QCheck.Test.make ~count:10 ~name gen test
+
 let suite =
-  [ 
+  [
     test_index;
     test_mutation;
     test_automaton;
+    test_big;
   ]
 
 let () =
