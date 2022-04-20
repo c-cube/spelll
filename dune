@@ -5,4 +5,3 @@
  (action (progn
           (run ocaml-mdx test %{readme})
           (diff? %{readme} %{readme}.corrected))))
-
