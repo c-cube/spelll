@@ -1,4 +1,4 @@
-# Spelll [![build status](https://travis-ci.org/c-cube/spelll.svg?branch=master)](https://travis-ci.org/c-cube/spelll)
+# Spelll [![build](https://github.com/c-cube/spelll/actions/workflows/main.yml/badge.svg)](https://github.com/c-cube/spelll/actions/workflows/main.yml)
 
 Fuzzy string searching, using Levenshtein automaton. Can be used for spell-checking.
 
