@@ -250,7 +250,7 @@ module Make(Str : STRING) = struct
     (* set of pairs of ints: used for representing a set of states of the NDA *)
     module NDAStateSet = Set.Make(struct
         type t = int * int
-        let compare = Pervasives.compare
+        let compare = Stdlib.compare
       end)
 
     let _set_to_string s =

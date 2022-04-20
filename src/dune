@@ -2,5 +2,5 @@
 (library
   (name spelll)
   (public_name spelll)
-  (libraries seq)
+  (libraries seq stdlib-shims)
   (flags :standard -warn-error -a+8 -safe-string))
