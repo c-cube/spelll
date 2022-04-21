@@ -1,18 +1,17 @@
 opam-version: "2.0"
 name: "spelll"
-version: "0.3"
+version: "0.4"
 author: "simon.cruanes.2007@m4x.org"
 maintainer: "simon.cruanes.2007@m4x.org"
 synopsis: "Fuzzy string searching, using Levenshtein automaton"
 build: [
   ["dune" "build" "@install" "-p" name "-j" jobs]
-  ["dune" "runtest" "-p" name "-j" jobs] {with-test & ocaml:version >= "4.03"}
+  ["dune" "runtest" "-p" name "-j" jobs] {with-test}
   ["dune" "build" "@doc" "-p" name "-j" jobs] {with-doc}
 ]
 depends: [
   "ocaml" {>= "4.03"}
   "dune" {>= "1.1"}
-  "base-bytes"
   "seq"
   "stdlib-shims"
   "qcheck" {with-test}
@@ -20,7 +19,7 @@ depends: [
   "odoc" {with-doc}
 ]
 tags: [ "spell" "levenshtein" "automaton" "typo" "edit" "distance"]
-homepage: "https://github.com/c-cube/spelll"
+homepage: "https://github.com/c-cube/spelll/"
 doc: "http://c-cube.github.io/spelll/"
-dev-repo: "git://github.com/c-cube/spelll"
+dev-repo: "git+https://github.com/c-cube/spelll.git"
 bug-reports: "https://github.com/c-cube/spelll/issues"
