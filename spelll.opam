@@ -3,6 +3,7 @@ name: "spelll"
 version: "0.4"
 author: "simon.cruanes.2007@m4x.org"
 maintainer: "simon.cruanes.2007@m4x.org"
+license: "BSD-2-Clause"
 synopsis: "Fuzzy string searching, using Levenshtein automaton"
 build: [
   ["dune" "build" "@install" "-p" name "-j" jobs]
