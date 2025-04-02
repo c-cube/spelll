@@ -37,7 +37,6 @@ end
 val list_of_seq : 'a Seq.t -> 'a list
 (** Helper. *)
 
-
 (** {2 Signature}
 
     The signature for a given string representation provides 3 main things:
@@ -94,8 +93,8 @@ module type S = sig
   val of_list : limit:int -> char_ list -> automaton
   (** Build an automaton from a list, with a maximal distance [limit] *)
 
-  val debug_print : (out_channel -> char_ -> unit) ->
-    out_channel -> automaton -> unit
+  val debug_print :
+    (out_channel -> char_ -> unit) -> out_channel -> automaton -> unit
   (** Output the automaton's structure on the given channel. *)
 
   val match_with : automaton -> string_ -> bool
@@ -122,7 +121,7 @@ module type S = sig
     val remove : 'b t -> string_ -> 'b t
     (** Remove a string (and its associated value, if any) from the index. *)
 
-    val retrieve : limit:int -> 'b t -> string_ -> 'b Seq.t 
+    val retrieve : limit:int -> 'b t -> string_ -> 'b Seq.t
     (** Lazy list of objects associated to strings close to the query string *)
 
     val retrieve_l : limit:int -> 'b t -> string_ -> 'b list
@@ -147,9 +146,8 @@ module type S = sig
   end
 end
 
-module Make(Str : STRING) : S
-  with type string_ = Str.t
-   and type char_ = Str.char_
+module Make (Str : STRING) :
+  S with type string_ = Str.t and type char_ = Str.char_
 
 include S with type char_ = char and type string_ = string
 

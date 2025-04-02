@@ -1,5 +1,3 @@
-
 (tests
-  (names run_qcheck)
-  (libraries spelll qcheck))
-
+ (names run_qcheck)
+ (libraries spelll qcheck))
