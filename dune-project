@@ -13,5 +13,5 @@
   (name spelll)
   (synopsis "Fuzzy string searching, using Levenshtein automaton")
   (depends (ocaml (>= 4.08)) seq (qcheck :with-test)
-           (ocaml-mdx :with-test)
+           (mdx :with-test)
            (odoc :with-doc)))
