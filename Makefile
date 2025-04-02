@@ -7,6 +7,9 @@ dev: build test
 clean:
 	@dune clean
 
+fmt:
+	dune fmt
+
 test:
 	@dune runtest --force --no-buffer
 
