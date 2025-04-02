@@ -13,7 +13,7 @@ jobs:
           - ubuntu-latest
         ocaml-compiler:
           - 4.08
-          - 5.03x
+          - 5.03
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@main
