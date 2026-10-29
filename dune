@@ -1,7 +1,7 @@
 
 (alias
  (name runtest)
- (deps (:readme README.md))
+ (deps (package spelll) (:readme README.md))
  (action (progn
           (run ocaml-mdx test %{readme})
           (diff? %{readme} %{readme}.corrected))))
